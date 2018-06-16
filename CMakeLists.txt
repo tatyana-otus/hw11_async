@@ -19,7 +19,7 @@ set_target_properties(async PROPERTIES
   COMPILE_OPTIONS -Wall -Wextra -Wpedantic 
 )
 
-set (CMAKE_CXX_FLAGS "-fsanitize=thread")
+#set (CMAKE_CXX_FLAGS "-fsanitize=thread")
 
 install(TARGETS async LIBRARY DESTINATION lib)
 
