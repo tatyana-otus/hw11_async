@@ -31,7 +31,6 @@ struct WriteData : public Handler
                 std::string msg = "Can't create file: " + file_name + '\n';
                 throw std::runtime_error(msg.c_str());
             }
-
             stream_out(v, of);
 
             if(of.good()) {
@@ -43,7 +42,7 @@ struct WriteData : public Handler
             
             of.close();
         }
-        else {
+        else {          
             std::string msg = file_name + " log file already exists\n";
             throw std::logic_error(msg.c_str());
         }  
@@ -93,7 +92,7 @@ struct WriteData : public Handler
         }
         catch(const std::exception &e) {
             eptr = std::current_exception();
-            failure = true;           
+            failure = true;  
         }     
     }
 

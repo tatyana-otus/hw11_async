@@ -1,7 +1,6 @@
 #include <functional>
 #include <map>
 #include <tuple>
-#include <chrono>
 #include "command.h"
 #include "bulk_handlers.h"
 
@@ -57,7 +56,13 @@ struct Application
 
     void receive(context_index_t handle, const char *data, std::size_t size)
     {
-        transmit_data(handle, data, size);
+        try {
+            if(check_falure()) throw std::runtime_error("Some worker thread terminated due to some exception.");
+            transmit_data(handle, data, size);
+        }
+        catch(const std::exception &e) {
+            throw;
+        }    
     }
 
 
@@ -81,11 +86,11 @@ protected:
     void stop()
     {
         data_log->quit = true;
-        for (auto const& f : file_log) {
+        for (auto & f : file_log) {
             f->quit = true;
         }
 
-        std::unique_lock<std::mutex> lk(q_print->cv_mx);  // without lock -fsanitize=thread hung empty test 1:10 
+        std::unique_lock<std::mutex> lk(q_print->cv_mx);
         q_print->cv.notify_one();
         lk.unlock();
 
@@ -97,8 +102,6 @@ protected:
         for (auto const& f : file_log) {
             f->stop();
         }
-
-        handle_first_th_exeption(); // !!!
     }
 
 
@@ -182,7 +185,7 @@ protected:
     }
 
 
-    void handle_first_th_exeption() const
+    /*void handle_first_th_exeption() const
     {
         if(data_log->eptr) return std::rethrow_exception(data_log->eptr);
 
@@ -191,7 +194,7 @@ protected:
                 std::rethrow_exception(f->eptr);
             }
         }
-    }
+    }*/
 
     size_t file_th_cnt;
 

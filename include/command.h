@@ -2,12 +2,8 @@
 #include <algorithm>
 #include <ctime>
 #include <vector>
-#include <memory>
-#include <condition_variable>
-#include <queue>
 #include <thread>
 #include <atomic>
-#include <exception>
 #include <sstream>
 
 #include "consts_types.h"
@@ -155,7 +151,7 @@ struct Command {
     }
 
 
-    void get_data(std::string line)
+    void get_data(const std::string& line)
     {
         try {  
             if(line.size() > MAX_CMD_LENGTH){

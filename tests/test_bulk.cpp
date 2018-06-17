@@ -1,6 +1,5 @@
 #include "application.h"
 #include <sstream>
-#include <iostream>
 
 #define BOOST_TEST_MODULE test_main
 

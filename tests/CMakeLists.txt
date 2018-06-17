@@ -54,5 +54,6 @@ add_test(receive_2h_shuffle test_bulk_cli  -t test_suite_4)
 add_test(receive_2h_diff_th test_bulk_cli  -t test_suite_5)
 add_test(incomplete_command test_bulk_cli  -t test_suite_6)
 
-add_test(create_log_file    test_log_cli   -t test_suite_1)
-add_test(remove_test_files  test_log_cli   -t test_suite_delete)
+add_test(create_log_file       test_log_cli   -t test_suite_1)
+add_test(log_file_alredy_exist test_log_cli   -t test_suite_2)
+add_test(remove_test_files     test_log_cli   -t test_suite_delete)

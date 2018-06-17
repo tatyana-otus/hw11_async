@@ -1,5 +1,3 @@
-#pragma once
-
 #include "consts_types.h"
 
 struct Handler

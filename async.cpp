@@ -1,7 +1,5 @@
 #include "async.h"
 #include "application.h"
-#include <iostream>
-#include <memory>
 
 Application app;
 
