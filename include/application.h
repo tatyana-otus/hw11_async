@@ -56,13 +56,8 @@ struct Application
 
     void receive(context_index_t handle, const char *data, std::size_t size)
     {
-        try {
-            if(check_falure()) throw std::runtime_error("Some worker thread terminated due to some exception.");
-            transmit_data(handle, data, size);
-        }
-        catch(const std::exception &e) {
-            throw;
-        }    
+
+        transmit_data(handle, data, size); 
     }
 
 
@@ -166,6 +161,7 @@ protected:
                     std::get<0>(it->second) += data[i];
                 }
                 else{
+                    if(check_falure()) throw std::runtime_error("Some worker thread terminated due to some exception.");
                     std::get<1>(it->second)->get_data(std::get<0>(it->second));
                     std::get<0>(it->second) = "";
                 }
