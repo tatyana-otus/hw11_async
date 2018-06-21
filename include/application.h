@@ -176,7 +176,14 @@ protected:
                     }
                     else{
                         if(check_falure()) throw std::runtime_error("Some worker thread terminated due to some exception.");
-                        std::get<1>(it->second)->get_data(std::get<0>(it->second));
+                        try {
+                            std::get<1>(it->second)->get_data(std::get<0>(it->second));
+                        }
+                        catch(const std::exception& e)
+                        {
+                            std::get<0>(it->second) = "";
+                            throw;
+                        }    
                         std::get<0>(it->second) = "";
                     }
                 }

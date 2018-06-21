@@ -108,6 +108,8 @@ struct Command {
                 blk_state = BulkState::end;
             }
             else if(braces_count < 0){
+                braces_count = 0;
+                data[idx_write].clear();
                 throw std::invalid_argument("wrong command stream");
             }    
         }
