@@ -46,6 +46,7 @@ enable_testing()
 add_test(test_handle        test_handle_cli  -t test_suite_main_1)
 add_test(invalid_bulk_size  test_handle_cli  -t test_suite_main_2)
 add_test(invalid_cmd_length test_handle_cli  -t test_suite_main_3)
+add_test(wrong_cmd          test_handle_cli  -t test_suite_main_4)
 
 add_test(receive_by_char    test_bulk_cli  -t test_suite_1)
 add_test(receive_all        test_bulk_cli  -t test_suite_2)

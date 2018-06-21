@@ -1,8 +1,8 @@
 #pragma once
 #include "queue_wrapper.h"
 
-const size_t MAX_BULK_SIZE  = 512;
-const size_t MAX_CMD_LENGTH = 128;
+const size_t MAX_BULK_SIZE  = 128;
+const size_t MAX_CMD_LENGTH = 64;
 
 const size_t CIRCLE_BUFF_SIZE = 1024;
 static_assert(CIRCLE_BUFF_SIZE > 4, "");

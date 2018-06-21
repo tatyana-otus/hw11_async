@@ -1,6 +1,7 @@
 #include <functional>
 #include <map>
 #include <tuple>
+#include <shared_mutex>
 #include "command.h"
 #include "bulk_handlers.h"
 
@@ -36,7 +37,12 @@ struct Application
 
     ~Application()
     {
-        stop();
+        try {  
+            stop();
+        }
+        catch(const std::exception &e) {
+
+        }       
     }
 
 
@@ -46,7 +52,7 @@ struct Application
             throw std::invalid_argument("Invalid block size.");
         }
 
-        std::lock_guard<std::mutex> lock(context_mx);
+        std::unique_lock<std::shared_timed_mutex> lock(context_mx);
 
         auto index = add_context(bulk);
 
@@ -56,6 +62,7 @@ struct Application
 
     void receive(context_index_t handle, const char *data, std::size_t size)
     {
+        std::shared_lock<std::shared_timed_mutex> lock(context_mx);
 
         transmit_data(handle, data, size); 
     }
@@ -63,7 +70,8 @@ struct Application
 
     void disconnect(context_index_t handle)
     {
-        std::lock_guard<std::mutex> lock(context_mx);
+        std::unique_lock<std::shared_timed_mutex> lock(context_mx);
+
         remove_context(handle);
     }
 
@@ -145,8 +153,11 @@ protected:
         auto it = context.find(index);
 
         if(it != context.end()) {
-            std::get<1>(it->second)->on_cmd_end();
-            std::get<2>(it->second) = false;        
+            if(std::get<2>(it->second) == true){
+                std::get<1>(it->second)->on_cmd_end();
+                std::get<2>(it->second) = false;
+                std::get<0>(it->second) = "";
+            }            
         }      
     }
 
@@ -155,17 +166,21 @@ protected:
     {
         auto it = context.find(index);
         if(it != context.end()) {
+            if(std::get<2>(it->second) == true){
 
-            for(size_t i = 0; i < size; ++i){
-                if(data[i] != '\n'){
-                    std::get<0>(it->second) += data[i];
+                std::lock_guard<std::mutex> lock(std::get<1>(it->second)->get_data_mx);
+
+                for(size_t i = 0; i < size; ++i){
+                    if(data[i] != '\n'){
+                        std::get<0>(it->second) += data[i];
+                    }
+                    else{
+                        if(check_falure()) throw std::runtime_error("Some worker thread terminated due to some exception.");
+                        std::get<1>(it->second)->get_data(std::get<0>(it->second));
+                        std::get<0>(it->second) = "";
+                    }
                 }
-                else{
-                    if(check_falure()) throw std::runtime_error("Some worker thread terminated due to some exception.");
-                    std::get<1>(it->second)->get_data(std::get<0>(it->second));
-                    std::get<0>(it->second) = "";
-                }
-            }    
+            }       
         }
     }
 
@@ -195,7 +210,7 @@ protected:
     size_t file_th_cnt;
 
     context_t  context; 
-    std::mutex context_mx;
+    std::shared_timed_mutex context_mx;
 
     std::shared_ptr<PrintData> data_log;
     std::vector<std::shared_ptr<WriteData>> file_log;

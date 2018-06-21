@@ -80,7 +80,6 @@ struct Command {
     {
         ++idx_write;
         idx_write %= CIRCLE_BUFF_SIZE;
-       // ++blk_count;
 
         std::unique_lock<std::mutex> lk_ext_data(file_task->cv_mx_empty);
         if(data_ext[idx_write] == true) { 
@@ -96,8 +95,6 @@ struct Command {
     void on_new_cmd(const std::string& d)
     {
         BulkState blk_state = BulkState::save;
-
-        //++str_count;
 
         if(d == "{") {  
             if(braces_count == 0) {
@@ -118,7 +115,6 @@ struct Command {
             if(data[idx_write].empty())
                 init_time = std::time(nullptr);
             data[idx_write].push_back(d);
-            //++cmd_count;
         }
 
         exec_state(blk_state);
@@ -129,6 +125,10 @@ struct Command {
     {
         if(braces_count == 0){
             exec_state(BulkState::end);
+        }
+        else{
+            data[idx_write].clear(); 
+            braces_count = 0;   
         }
     }
 
@@ -152,21 +152,17 @@ struct Command {
 
 
     void get_data(const std::string& line)
-    {
-        try {  
-            if(line.size() > MAX_CMD_LENGTH){
-                std::string msg = "Invalid command length. Command length must be < " 
-                                  + std::to_string(MAX_CMD_LENGTH) + " :" + line + ".\n";
-                throw std::invalid_argument(msg.c_str());
-            }
-            on_new_cmd(line);
+    { 
+        if(line.size() > MAX_CMD_LENGTH){
+            std::string msg = "Invalid command length. Command length must be < " 
+                              + std::to_string(MAX_CMD_LENGTH) + " :" + line + ".\n";
+            throw std::invalid_argument(msg.c_str());
         }
-        catch(const std::exception &e) {
-            throw;
-        }
+        on_new_cmd(line);      
     }
 
 
+    std::mutex get_data_mx;
 private:
     size_t N;
     p_file_tasks file_task;
@@ -181,4 +177,6 @@ private:
     int braces_count; 
     size_t idx_write;
     size_t file_id;
+
+    
 };

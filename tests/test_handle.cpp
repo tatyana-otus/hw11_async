@@ -65,3 +65,15 @@ BOOST_AUTO_TEST_CASE(invalid_cmd_length)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+
+BOOST_AUTO_TEST_SUITE(test_suite_main_4)
+
+BOOST_AUTO_TEST_CASE(wrong_cmd)
+{
+    auto h = async::connect(1);   
+    
+    BOOST_CHECK_THROW(async::receive(h, "}\n", 2), std::invalid_argument);
+}
+
+BOOST_AUTO_TEST_SUITE_END()
