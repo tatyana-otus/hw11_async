@@ -230,6 +230,47 @@ BOOST_AUTO_TEST_CASE(incomplete_command)
         app.disconnect(h1);
     }
     BOOST_CHECK_EQUAL( oss.str(), out_1h);
- }   
+ }  
+BOOST_AUTO_TEST_SUITE_END()
+
+BOOST_AUTO_TEST_SUITE(test_suite_7)
+
+BOOST_AUTO_TEST_CASE(receive_async_2th)
+{  
+    
+    std::stringstream oss;
+
+    {
+        Application app(oss, 2);
+        std::size_t bulk = 1;
+        auto h1 = app.connect(bulk);
+        auto h2 = app.connect(bulk);
+
+        std::thread helper1([&app, h1, h2, bulk](){
+
+            for(auto i = 0; i < 10; ++i) {
+                app.receive(h1, "a",  1);
+                app.receive(h2, "b",  1);
+            }    
+        });  
+
+        std::thread helper2([&app, h1, h2, bulk](){
+        
+            for(auto i = 0; i < 10; ++i) {
+                app.receive(h1, "a",  1);
+                app.receive(h2, "b",  1);
+            }
+        });     
+
+        helper1.join();
+        helper2.join();
+
+        app.receive(h1, "\n",  1);
+        app.receive(h2, "\n",  1);
+    }
+
+    BOOST_CHECK_EQUAL( oss.str(), 
+                      "bulk: aaaaaaaaaaaaaaaaaaaa\nbulk: bbbbbbbbbbbbbbbbbbbb\n");
+ }    
 
 BOOST_AUTO_TEST_SUITE_END()

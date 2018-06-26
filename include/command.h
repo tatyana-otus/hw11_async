@@ -73,7 +73,7 @@ struct Command {
     { 
         if(line.size() > MAX_CMD_LENGTH){
             std::string msg = "Invalid command length. Command length must be < " 
-                              + std::to_string(MAX_CMD_LENGTH) + " :" + line + ".\n";
+                              + std::to_string(MAX_CMD_LENGTH);
             throw std::invalid_argument(msg.c_str());
         }
         on_new_cmd(line);      

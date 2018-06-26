@@ -83,16 +83,16 @@ BOOST_AUTO_TEST_CASE(log_file_alredy_exist)
         of.close();
     }    
 
+    async::receive(h, "cmd_123\n", 8);   
+    std::this_thread::sleep_for(std::chrono::seconds(1));
     async::receive(h, "cmd_123\n", 8);
 
-    std::this_thread::sleep_for(std::chrono::seconds(1));
+    auto h1 = async::connect(1);
+    BOOST_CHECK(h1 == nullptr);
 
-    BOOST_CHECK_THROW(async::receive(h, "cmd_123\n", 8), std::runtime_error);  
 }
 
 BOOST_AUTO_TEST_SUITE_END()
-
-
 
 
 BOOST_AUTO_TEST_SUITE(test_suite_delete)

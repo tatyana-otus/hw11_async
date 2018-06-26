@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_SUITE(test_suite_main_2)
 
 BOOST_AUTO_TEST_CASE(invalid_bulk_size)
 {
-    BOOST_CHECK_THROW(async::connect(MAX_BULK_SIZE + 1), std::invalid_argument);
+    BOOST_CHECK(async::connect(MAX_BULK_SIZE + 1) == nullptr);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -57,11 +57,13 @@ BOOST_AUTO_TEST_SUITE(test_suite_main_3)
 BOOST_AUTO_TEST_CASE(invalid_cmd_length)
 {
     std::string in_data (MAX_CMD_LENGTH + 1, 'a');
+    in_data += "\n";
 
     auto h = async::connect(1);   
     
-    BOOST_CHECK_NO_THROW(async::receive(h, in_data.c_str(), MAX_CMD_LENGTH + 1));
-    BOOST_CHECK_THROW(async::receive(h, "\n", 1), std::invalid_argument);
+    BOOST_CHECK_NO_THROW(async::receive(h, in_data.c_str(), in_data.size() + 1));
+    auto h1 = async::connect(1);
+    BOOST_CHECK(h1 == nullptr);
 }
 
 BOOST_AUTO_TEST_SUITE_END()
@@ -73,7 +75,9 @@ BOOST_AUTO_TEST_CASE(wrong_cmd)
 {
     auto h = async::connect(1);   
     
-    BOOST_CHECK_THROW(async::receive(h, "}\n", 2), std::invalid_argument);
+    BOOST_CHECK_NO_THROW(async::receive(h, "}\n", 2));
+    auto h1 = async::connect(1);
+    BOOST_CHECK(h1 == nullptr);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -6,6 +6,7 @@ find_package(Threads)
 add_executable(test_handle_cli         test_handle.cpp)
 add_executable(test_log_cli            test_log.cpp)
 add_executable(test_bulk_cli           test_bulk.cpp)
+add_executable(test_async_cli           test_async.cpp)
 
 target_include_directories(test_handle_cli  PRIVATE ../include)
 target_include_directories(test_handle_cli  PRIVATE ${Boost_INCLUDE_DIR})
@@ -16,7 +17,10 @@ target_include_directories(test_log_cli PRIVATE ${Boost_INCLUDE_DIR})
 target_include_directories(test_bulk_cli PRIVATE ../include)
 target_include_directories(test_bulk_cli PRIVATE ${Boost_INCLUDE_DIR})
 
-set_target_properties(test_handle_cli  test_bulk_cli test_log_cli PROPERTIES
+target_include_directories(test_async_cli PRIVATE ../include)
+target_include_directories(test_async_cli PRIVATE ${Boost_INCLUDE_DIR})
+
+set_target_properties(test_handle_cli  test_bulk_cli test_log_cli test_async_cli PROPERTIES
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
   COMPILE_OPTIONS -Wpedantic -Wall -Wextra
@@ -41,6 +45,12 @@ target_link_libraries(test_bulk_cli
   ${Boost_LIBRARIES}
 )
 
+target_link_libraries(test_async_cli
+  ${CMAKE_THREAD_LIBS_INIT}
+  ${Boost_LIBRARIES}
+  async
+)
+
 enable_testing()
 
 add_test(test_handle        test_handle_cli  -t test_suite_main_1)
@@ -54,7 +64,11 @@ add_test(receive_2_h        test_bulk_cli  -t test_suite_3)
 add_test(receive_2h_shuffle test_bulk_cli  -t test_suite_4)
 add_test(receive_2h_diff_th test_bulk_cli  -t test_suite_5)
 add_test(incomplete_command test_bulk_cli  -t test_suite_6)
+add_test(incomplete_command test_bulk_cli  -t test_suite_7)
 
 add_test(create_log_file       test_log_cli   -t test_suite_1)
 add_test(log_file_alredy_exist test_log_cli   -t test_suite_2)
-add_test(remove_test_files     test_log_cli   -t test_suite_delete)
+
+add_test(run_test     test_async_cli   -t run_test_async)
+
+add_test(test_suite_delete     test_log_cli   -t test_suite_delete)

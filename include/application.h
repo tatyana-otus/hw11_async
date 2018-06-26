@@ -14,6 +14,8 @@ struct Application
                                      std::greater<context_index_t>
                                     >;
 
+    std::string fail_msg = "async lib failed\n";
+
     Application(std::ostream& os = std::cout, 
                 size_t file_th_cnt_ = 2):file_th_cnt(file_th_cnt_)
     {
@@ -48,10 +50,6 @@ struct Application
 
     context_index_t connect(size_t bulk)
     {   
-        if((bulk == 0) || (bulk > MAX_BULK_SIZE)){       
-            throw std::invalid_argument("Invalid block size.");
-        }
-
         std::unique_lock<std::shared_timed_mutex> lock(context_mx);
 
         auto index = add_context(bulk);
@@ -75,7 +73,19 @@ struct Application
         remove_context(handle);
     }
 
+    bool is_fail()
+    {
+        return fail;
+    }
+
+    void set_fail()
+    {
+        fail = true;
+    }
+
 protected:
+
+    std::atomic<bool> fail{false};
 
     void start()
     {
@@ -93,13 +103,8 @@ protected:
             f->quit = true;
         }
 
-        std::unique_lock<std::mutex> lk(q_print->cv_mx);
         q_print->cv.notify_one();
-        lk.unlock();
-
-        std::unique_lock<std::mutex> lk_file(q_file->cv_mx);
         q_file->cv.notify_all();
-        lk_file.unlock();
 
         data_log->stop();
         for (auto const& f : file_log) {
@@ -201,18 +206,6 @@ protected:
         }
         return false;
     }
-
-
-    /*void handle_first_th_exeption() const
-    {
-        if(data_log->eptr) return std::rethrow_exception(data_log->eptr);
-
-        for (auto const& f : file_log) {
-            if (f->eptr) {
-                std::rethrow_exception(f->eptr);
-            }
-        }
-    }*/
 
     size_t file_th_cnt;
 
