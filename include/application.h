@@ -21,8 +21,8 @@ struct Application
         ss << std::this_thread::get_id();
         auto main_th_id = ss.str();
 
-        q_file  = std::make_shared<queue_wrapper<f_msg_type_ext>>();
-        q_print = std::make_shared<queue_wrapper<p_data_type>>();
+        q_file  = std::make_shared<f_tasks_t>();
+        q_print = std::make_shared<p_tasks_t>();
 
         data_log = std::make_shared<PrintData>(q_print, os); 
         file_log.resize(file_th_cnt);
@@ -222,6 +222,6 @@ protected:
     std::shared_ptr<PrintData> data_log;
     std::vector<std::shared_ptr<WriteData>> file_log;
 
-    std::shared_ptr<queue_wrapper<f_msg_type_ext>> q_file;
-    std::shared_ptr<queue_wrapper<p_data_type>>    q_print;
+    std::shared_ptr<f_tasks_t> q_file;
+    std::shared_ptr<p_tasks_t> q_print;
 };
