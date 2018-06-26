@@ -7,6 +7,7 @@ add_executable(test_handle_cli         test_handle.cpp)
 add_executable(test_log_cli            test_log.cpp)
 add_executable(test_bulk_cli           test_bulk.cpp)
 add_executable(test_async_cli           test_async.cpp)
+add_executable(programm_test           programm_test.cpp)
 
 target_include_directories(test_handle_cli  PRIVATE ../include)
 target_include_directories(test_handle_cli  PRIVATE ${Boost_INCLUDE_DIR})
@@ -20,13 +21,22 @@ target_include_directories(test_bulk_cli PRIVATE ${Boost_INCLUDE_DIR})
 target_include_directories(test_async_cli PRIVATE ../include)
 target_include_directories(test_async_cli PRIVATE ${Boost_INCLUDE_DIR})
 
-set_target_properties(test_handle_cli  test_bulk_cli test_log_cli test_async_cli PROPERTIES
+target_include_directories(programm_test PRIVATE ../include)
+target_include_directories(programm_test PRIVATE ${Boost_INCLUDE_DIR})
+
+set_target_properties(test_handle_cli  test_bulk_cli test_log_cli test_async_cli programm_test PROPERTIES
   CXX_STANDARD 14
   CXX_STANDARD_REQUIRED ON
   COMPILE_OPTIONS -Wpedantic -Wall -Wextra
   COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK
 )
 #set (CMAKE_CXX_FLAGS "-fsanitize=thread")
+
+target_link_libraries(programm_test
+  ${CMAKE_THREAD_LIBS_INIT} 
+  ${Boost_LIBRARIES}
+  async
+)
 
 target_link_libraries(test_handle_cli
   ${CMAKE_THREAD_LIBS_INIT}	
