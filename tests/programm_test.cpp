@@ -46,7 +46,7 @@ int main()
   //          std::this_thread::yield();
         }
 
-        std::cout << "stop" << std::endl;
+        //std::cout << "stop" << std::endl;
         can_do = false;
         reconnecting1.join();
         reconnecting2.join();
@@ -57,7 +57,7 @@ int main()
         return 1;
     }
 
-    std::cout << "done" << std::endl;
+    //std::cout << "done" << std::endl;
 
     return 0;
 }

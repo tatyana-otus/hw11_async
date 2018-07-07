@@ -12,6 +12,7 @@ BOOST_AUTO_TEST_SUITE(run_test_async)
 
 BOOST_AUTO_TEST_CASE(run_test)
 {
+    std::system("rm -f *.log res.txt res_bulk.txt");
     std::string data =  "bulk: 0 0, , 1 1\n"
                         "bulk: 11\n"
                         "bulk: 12, 13, 14\n"
@@ -21,7 +22,7 @@ BOOST_AUTO_TEST_CASE(run_test)
                         "bulk: 5, 6, 7\n"
                         "bulk: 8, 9, 10\n";
 
-    BOOST_CHECK_NO_THROW(std::system("seq 1 10 |./programm_test > res.txt"));
+    std::system("seq 1 200 |./programm_test > res.txt");
     std::system("sort res.txt | uniq | grep bulk > res_bulk.txt");
 
     auto file = std::ifstream("res_bulk.txt");
