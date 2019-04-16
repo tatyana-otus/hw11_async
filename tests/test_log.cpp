@@ -99,7 +99,7 @@ BOOST_AUTO_TEST_SUITE(test_suite_delete)
 
 BOOST_AUTO_TEST_CASE(remove_test_files)
 {
-    std::system("rm -f bulk*.log");
+   // std::system("rm -f bulk*.log");
 }
 
 BOOST_AUTO_TEST_SUITE_END()
